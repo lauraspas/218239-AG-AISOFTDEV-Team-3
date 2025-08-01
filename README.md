@@ -351,9 +351,25 @@ GET /restock-suggestions
 ├── artifacts/                     # Project documentation and frontend
 │   ├── React/                     # React frontend application
 │   │   ├── src/
+│   │   │   ├── components/        # React components
+│   │   │   │   ├── AddProductModal.jsx
+│   │   │   │   ├── ChatWidget.jsx
+│   │   │   │   ├── EditProductModal.jsx
+│   │   │   │   ├── LoadingSpinner.jsx
+│   │   │   │   ├── NotificationToast.jsx
+│   │   │   │   ├── PolishedTable.jsx
+│   │   │   │   ├── RestockDashboard.jsx
+│   │   │   │   ├── RestockModal.jsx
+│   │   │   │   ├── SearchBar.jsx
+│   │   │   │   └── Sidebar.jsx
+│   │   │   ├── services/          # API services
+│   │   │   │   └── api.js
+│   │   │   ├── assets/            # Images and static files
+│   │   │   │   └── ShelfSense Logo.png
 │   │   │   ├── App.jsx            # Main React component
-│   │   │   ├── RestockDashboard.jsx # AI-powered restock recommendations
-│   │   │   └── App.css            # Application styles
+│   │   │   ├── App.css            # Application styles
+│   │   │   ├── constants.js       # Configuration constants
+│   │   │   └── utils.js           # Frontend utilities
 │   │   ├── package.json           # Frontend dependencies
 │   │   └── vite.config.js         # Vite configuration
 │   ├── day1_prd.md               # Product Requirements Document
@@ -363,15 +379,17 @@ GET /restock-suggestions
 ├── templates/                     # Documentation templates
 ├── tests/                         # Test files
 │   └── test_main_simple.py
-├── requirements.txt               # Python dependencies
-├── package.json                   # Node.js dependencies (root)
-├── start-backend.bat             # Windows batch file for backend
-├── start-frontend.bat            # Windows batch file for frontend
-├── start-backend.sh              # Unix shell script for backend
-├── start-frontend.sh             # Unix shell script for frontend
-├── utils.py                      # Utility functions
-├── test_api.py                   # API testing script
-└── README.md                     # This file
+├── Capstone.ipynb               # Project development phases notebook
+├── requirements.txt              # Python dependencies
+├── start-backend.bat            # Windows batch file for backend
+├── start-frontend.bat           # Windows batch file for frontend
+├── start-backend.sh             # Unix shell script for backend
+├── start-frontend.sh            # Unix shell script for frontend
+├── utils.py                     # Utility functions
+├── test_api.py                  # API testing script
+├── .gitignore                   # Git ignore patterns
+├── LICENSE                      # Project license
+└── README.md                    # This file
 ```
 
 ## 👥 User Guide

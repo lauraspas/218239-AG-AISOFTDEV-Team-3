@@ -219,3 +219,41 @@ Capstone.md
 Daily agenda.md
 Dockerfile
 README.md
+
+# Unused/Legacy Files - Not Related to Active ShelfSense Application
+# Legacy login components
+improved_login_component.jsx
+login_form_component.jsx
+refactored_login_components.jsx
+
+# Duplicate documentation files (duplicates of artifacts/ versions)
+adr_001_database_choice.md
+component_diagram.puml
+day1_prd.md
+design_review.md
+final_design_review.md
+schema.sql
+seed_data.sql
+
+# Test/debug files
+test_api.py
+test_api_simple.py
+test_ask_inventory.py
+test_macbook_search.py
+
+# Unused app files
+app/chat_ui.py
+app/main_in_memory.py
+app/validation_models/
+
+# Onboarding artifacts (not inventory related)
+onboarding.db
+onboarding_component_diagram.png
+onboarding_sequence_diagram.png
+artifacts/onboarding.db
+
+# Templates directory
+templates/
+
+# Example/template files
+README_Example.txt

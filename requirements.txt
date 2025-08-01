@@ -73,6 +73,7 @@ langchain-mcp-adapters # LangChain adapters for the Model Context Protocol
 # -- External Tools & APIs for Agents --
 # Libraries for tools that agents can use.
 tavily-python         # Python client for the Tavily Search API, optimized for LLMs
+openai                # OpenAI API client for GPT models and AI-powered features
 
 # -- Diagramming as Code --
 # For generating architecture diagrams on Day 2.
@@ -84,3 +85,4 @@ pydantic
 sqlalchemy
 uvicorn
 pytest
+openai

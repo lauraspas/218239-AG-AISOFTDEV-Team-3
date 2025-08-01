@@ -5,7 +5,7 @@
 [![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
 [![SQLite](https://img.shields.io/badge/SQLite-3+-lightgrey.svg)](https://www.sqlite.org/)
 
-A comprehensive inventory management system designed to help businesses efficiently track and manage stock across multiple locations. This system provides real-time inventory tracking, automated alerts, and comprehensive reporting capabilities.
+A comprehensive inventory management system designed to help businesses efficiently track and manage stock across multiple locations. This system provides real-time inventory tracking, automated alerts, comprehensive reporting capabilities, and advanced AI-powered features including intelligent product autofill that extracts structured data from natural language descriptions.
 
 ## 📋 Table of Contents
 
@@ -45,14 +45,24 @@ The Inventory Management System (IMS) is a full-stack web application that addre
 ### Core Functionality
 - ✅ Real-time inventory tracking
 - ✅ Product management (CRUD operations)
+- ✅ **AI-powered product autofill** using GPT-4o
+- ✅ **AI-powered restock dashboard** with multi-agent recommendations
+- ✅ **Chat-based inventory management** with natural language interface
 - ✅ Barcode scanning support
 - ✅ Stock level monitoring
 - ✅ Low stock and out-of-stock alerts
 - ✅ Category-based product organization
 - ✅ Price management
 - ✅ Search and filtering capabilities
+- ✅ Dynamic product suggestions and recommendations
 
 ### Advanced Features
+- 🤖 **Multi-Agent AI System**: Three specialized AI agents for inventory analysis
+  - **Inventory Analyzer**: Analyzes current stock levels and trends
+  - **Demand Forecaster**: Predicts future demand patterns
+  - **Reorder Assistant**: Provides intelligent restock recommendations
+- 📊 **AI-Powered Restock Dashboard**: Weekly intelligent restock suggestions
+- 💬 **Natural Language Inventory Chat**: Ask questions about inventory in plain English
 - 📊 Comprehensive reporting and analytics
 - 🔔 Automated reorder alerts
 - 👥 Multi-user role management
@@ -68,12 +78,15 @@ The Inventory Management System (IMS) is a full-stack web application that addre
 - **SQLite**: Lightweight database for development
 - **Pydantic**: Data validation using Python type annotations
 - **Uvicorn**: ASGI server implementation
+- **OpenAI API**: GPT-4o integration for AI-powered features
+- **Multi-Agent AI System**: Specialized AI agents for intelligent inventory management
 
 ### Frontend
 - **React**: JavaScript library for building user interfaces
 - **Vite**: Next-generation frontend tooling
 - **CSS3**: Modern styling with responsive design
 - **React Icons**: Beautiful icon library
+- **AI-Powered Components**: Restock dashboard and chat interface
 
 ### Development Tools
 - **Python 3.11+**: Programming language
@@ -133,7 +146,17 @@ source labenv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### 2.3 Initialize Database
+#### 2.3 Configure Environment Variables
+
+Create a `.env` file in the root directory with your OpenAI API key:
+
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+**Note**: The autofill feature and AI-powered restock recommendations require an OpenAI API key. If not provided, these AI features will return an error but other features will work normally.
+
+#### 2.4 Initialize Database
 
 The database will be automatically created when you first run the application. The system uses SQLite for simplicity and includes automatic table creation.
 
@@ -180,9 +203,12 @@ start-frontend.bat
 # Activate virtual environment (if not already active)
 labenv\Scripts\activate
 
-# Start FastAPI server
+# Start FastAPI server (Option A - Direct)
 cd app
 python main.py
+
+# OR Start with uvicorn directly (Option B - Uvicorn)
+# uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 The backend will be available at: `http://localhost:8000`
@@ -220,6 +246,11 @@ Once the backend is running, you can access the interactive API documentation:
 - `PUT /products/{id}` - Update a product
 - `DELETE /products/{id}` - Delete a product
 
+#### AI-Powered Features
+- `POST /autofill` - Analyze product description and extract structured data using GPT-4o
+- `POST /chat` - Natural language inventory management interface
+- `GET /restock-suggestions` - Get AI-powered weekly restock recommendations from multi-agent system
+
 #### Health Check
 - `GET /health` - Check API health status
 
@@ -243,6 +274,70 @@ POST /products/
 }
 ```
 
+#### Autofill Product Information
+```json
+POST /autofill
+{
+  "description": "20oz stainless steel water bottle, blue, BPA-free, 50 in stock"
+}
+```
+
+**Response:**
+```json
+{
+  "product_name": "20oz Stainless Steel Water Bottle",
+  "category": "Drinkware",
+  "tags": ["blue", "BPA-free", "stainless steel"],
+  "suggested_sku": "WAT-BLU-20OZ",
+  "quantity": 50
+}
+```
+
+#### Chat with Inventory
+```json
+POST /chat
+{
+  "message": "How many laptops do we have in stock?"
+}
+```
+
+**Response:**
+```json
+{
+  "response": "Currently, you have 15 laptops in stock across all warehouses. 8 are in the Central Warehouse and 7 are in the North Distribution Center.",
+  "timestamp": "2025-08-01T14:30:00Z"
+}
+```
+
+#### Get Restock Suggestions
+```json
+GET /restock-suggestions
+```
+
+**Response:**
+```json
+{
+  "suggestions": [
+    {
+      "product_name": "Wireless Headphones",
+      "current_stock": 5,
+      "reorder_point": 10,
+      "suggested_quantity": 25,
+      "priority": "High",
+      "reasoning": "Below reorder point, high demand trend",
+      "estimated_cost": 625.00
+    }
+  ],
+  "summary": {
+    "total_items": 8,
+    "high_priority": 3,
+    "medium_priority": 3,
+    "low_priority": 2,
+    "total_estimated_cost": 15420.00
+  }
+}
+```
+
 ## 📁 Project Structure
 
 ```
@@ -257,6 +352,7 @@ POST /products/
 │   ├── React/                     # React frontend application
 │   │   ├── src/
 │   │   │   ├── App.jsx            # Main React component
+│   │   │   ├── RestockDashboard.jsx # AI-powered restock recommendations
 │   │   │   └── App.css            # Application styles
 │   │   ├── package.json           # Frontend dependencies
 │   │   └── vite.config.js         # Vite configuration
@@ -290,6 +386,7 @@ POST /products/
    - Category
    - Price
    - Initial Stock Quantity
+   - **Pro Tip**: Use the AI autofill feature by describing your product in natural language (e.g., "20oz blue stainless steel water bottle, BPA-free, 50 in stock") and let the system automatically extract structured data including product name, category, suggested SKU, and quantity.
 
 3. **Managing Inventory**: 
    - View all products in the main inventory table
@@ -302,6 +399,17 @@ POST /products/
    - Out of stock items
    - Items requiring reorder
 
+5. **AI-Powered Restock Dashboard**: Access intelligent weekly restock recommendations:
+   - Click "Restock Dashboard" in the navigation
+   - View AI-generated suggestions with priority levels
+   - See detailed reasoning for each recommendation
+   - Monitor total estimated costs
+
+6. **Chat Interface**: Ask questions about your inventory in natural language:
+   - Use the chat feature to query stock levels
+   - Get instant responses about product availability
+   - Ask about trends and recommendations
+
 ### Key Features Walkthrough
 
 #### Dashboard
@@ -313,6 +421,18 @@ POST /products/
 - Complete CRUD operations for products
 - Category-based organization
 - Price and stock level tracking
+- AI-powered product autofill for faster data entry
+
+#### AI-Powered Restock Dashboard
+- Weekly intelligent restock recommendations
+- Multi-agent AI analysis system
+- Priority-based suggestion ranking
+- Cost estimation and budget planning
+
+#### Natural Language Chat Interface
+- Ask questions about inventory in plain English
+- Real-time responses about stock levels
+- Intelligent query processing and analysis
 
 #### Search and Filtering
 - Real-time search across product names and SKUs
@@ -440,6 +560,40 @@ if __name__ == "__main__":
 1. Close any SQLite browser connections
 2. Restart the application
 3. Check file permissions on the database file
+
+#### OpenAI API Issues
+
+**Issue**: Autofill feature returns "service unavailable"
+**Solution**: 
+1. Ensure you have an OpenAI API key
+2. Add it to your `.env` file: `OPENAI_API_KEY=your_key_here`
+3. Restart the backend server
+
+**Issue**: Restock dashboard shows "Error loading suggestions"
+**Solution**: 
+1. Verify OpenAI API key is properly configured
+2. Check that you have sufficient API credits
+3. Ensure products exist in the database
+4. Restart the backend server
+
+**Issue**: Chat interface not responding
+**Solution**: 
+1. Confirm OpenAI API key is valid and active
+2. Check browser console for JavaScript errors
+3. Verify backend is running and accessible
+4. Test API endpoints directly via Swagger UI
+
+**Issue**: OpenAI API authentication failed
+**Solution**: 
+1. Verify your API key is correct and active
+2. Check your OpenAI account has available credits
+3. Ensure the API key has the necessary permissions
+
+**Issue**: OpenAI rate limit exceeded
+**Solution**: 
+1. Wait for the rate limit to reset
+2. Consider upgrading your OpenAI plan for higher limits
+3. Implement request queuing if needed
 
 ### Getting Help
 

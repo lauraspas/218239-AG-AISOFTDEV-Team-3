@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FiEdit3, FiTrash2, FiPackage, FiSearch, FiAlertTriangle, FiDollarSign, FiTrendingUp } from 'react-icons/fi';
 import { MdDevices, MdCheckroom, MdHome, MdMenuBook, MdSportsBasketball, MdCategory } from 'react-icons/md';
 import { formatPrice, isLowStock, isOutOfStock, isAlertItem, getCategoryName } from '../utils';
+import DeleteConfirmModal from './DeleteConfirmModal';
 
 // Enhanced product icon component
 const getProductIcon = (category) => {
@@ -76,7 +77,8 @@ const getStockDisplay = (product) => {
 };
 
 const PolishedTable = ({ products, searchTerm, currentView, onEditProduct, onDeleteProduct, onRestockProduct }) => {
-  const [showConfirmDelete, setShowConfirmDelete] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   const filteredProducts = products.filter(product => {
     if (currentView === 'alerts') {
@@ -97,13 +99,21 @@ const PolishedTable = ({ products, searchTerm, currentView, onEditProduct, onDel
   });
 
   const handleDelete = (product) => {
-    if (showConfirmDelete === product.id) {
-      onDeleteProduct(product.id);
-      setShowConfirmDelete(null);
-    } else {
-      setShowConfirmDelete(product.id);
-      setTimeout(() => setShowConfirmDelete(null), 3000);
+    setProductToDelete(product);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (productToDelete) {
+      onDeleteProduct(productToDelete.id);
+      setDeleteModalOpen(false);
+      setProductToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteModalOpen(false);
+    setProductToDelete(null);
   };
 
   if (filteredProducts.length === 0) {
@@ -402,7 +412,7 @@ const PolishedTable = ({ products, searchTerm, currentView, onEditProduct, onDel
                     <button
                       onClick={() => handleDelete(product)}
                       style={{
-                        background: showConfirmDelete === product.id ? '#fecaca' : 'transparent',
+                        background: 'transparent',
                         border: 'none',
                         padding: '8px',
                         borderRadius: '8px',
@@ -411,17 +421,17 @@ const PolishedTable = ({ products, searchTerm, currentView, onEditProduct, onDel
                         alignItems: 'center',
                         justifyContent: 'center',
                         transition: 'all 0.2s ease',
-                        color: showConfirmDelete === product.id ? '#dc2626' : '#ef4444'
+                        color: '#ef4444'
                       }}
                       onMouseEnter={(e) => {
                         e.target.style.background = '#fecaca';
                         e.target.style.color = '#dc2626';
                       }}
                       onMouseLeave={(e) => {
-                        e.target.style.background = showConfirmDelete === product.id ? '#fecaca' : 'transparent';
-                        e.target.style.color = showConfirmDelete === product.id ? '#dc2626' : '#ef4444';
+                        e.target.style.background = 'transparent';
+                        e.target.style.color = '#ef4444';
                       }}
-                      title={showConfirmDelete === product.id ? "Click again to confirm" : "Delete product"}
+                      title="Delete product"
                     >
                       <FiTrash2 size={16} />
                     </button>
@@ -447,6 +457,14 @@ const PolishedTable = ({ products, searchTerm, currentView, onEditProduct, onDel
           <span style={{ color: '#94a3b8' }}> of {products.length} total</span>
         )}
       </div>
+      
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        productName={productToDelete?.name || ''}
+      />
     </div>
   );
 };

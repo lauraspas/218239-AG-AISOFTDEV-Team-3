@@ -9,7 +9,7 @@ const EditProductModal = ({ isOpen, onClose, onSubmit, product, isSubmitting }) 
     description: '',
     category: 'electronics',
     stock: 0,
-    price: 0
+    price: ''  // Start with empty string to allow user to type freely
   });
 
   // Reset form when product changes
@@ -20,7 +20,7 @@ const EditProductModal = ({ isOpen, onClose, onSubmit, product, isSubmitting }) 
         description: product.description || '',
         category: product.category || 'electronics',
         stock: product.stock || 0,
-        price: product.price || 0
+        price: product.price ? (product.price / 100) : 0  // Convert cents to dollars for display
       });
     }
   }, [product]);
@@ -29,7 +29,14 @@ const EditProductModal = ({ isOpen, onClose, onSubmit, product, isSubmitting }) 
     e.preventDefault();
     if (!formData.name.trim()) return;
     
-    await onSubmit(product.id, formData);
+    // Convert price from dollars to cents before submitting
+    const priceValue = formData.price === '' ? 0 : parseFloat(formData.price);
+    const submissionData = {
+      ...formData,
+      price: Math.round(priceValue * 100)  // Convert dollars to cents
+    };
+    
+    await onSubmit(product.id, submissionData);
     onClose();
   };
 
@@ -38,6 +45,16 @@ const EditProductModal = ({ isOpen, onClose, onSubmit, product, isSubmitting }) 
       ...prev,
       [field]: value
     }));
+  };
+
+  const handlePriceChange = (value) => {
+    // Allow empty string or valid numbers
+    if (value === '' || !isNaN(parseFloat(value))) {
+      setFormData(prev => ({
+        ...prev,
+        price: value === '' ? '' : parseFloat(value)
+      }));
+    }
   };
 
   const getCategoryIcon = (category) => {
@@ -95,13 +112,12 @@ const EditProductModal = ({ isOpen, onClose, onSubmit, product, isSubmitting }) 
             onClick={onClose}
             style={{
               position: 'absolute',
-              top: '16px',
-              right: '16px',
-              background: 'rgba(255, 255, 255, 0.2)',
+              top: '20px',
+              right: '20px',
+              background: 'transparent',
               border: 'none',
+              padding: '8px',
               borderRadius: '8px',
-              width: '36px',
-              height: '36px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -110,11 +126,12 @@ const EditProductModal = ({ isOpen, onClose, onSubmit, product, isSubmitting }) 
               color: 'white'
             }}
             onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.3)';
-            }}
-            onMouseLeave={(e) => {
               e.target.style.background = 'rgba(255, 255, 255, 0.2)';
             }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'transparent';
+            }}
+            title="Close"
           >
             <FiX size={20} />
           </button>
@@ -357,7 +374,7 @@ const EditProductModal = ({ isOpen, onClose, onSubmit, product, isSubmitting }) 
                   color: '#374151',
                   marginBottom: '8px'
                 }}>
-                  Price
+                  Price (USD)
                 </label>
                 <div style={{ position: 'relative' }}>
                   <div style={{
@@ -372,7 +389,7 @@ const EditProductModal = ({ isOpen, onClose, onSubmit, product, isSubmitting }) 
                   <input
                     type="number"
                     value={formData.price}
-                    onChange={(e) => handleChange('price', parseFloat(e.target.value) || 0)}
+                    onChange={(e) => handlePriceChange(e.target.value)}
                     min="0"
                     step="0.01"
                     style={{
